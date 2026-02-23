@@ -1,4 +1,4 @@
-name: Build and Deploy Vue 3
+name: Deploy Vue Front and Node API
 
 on:
   push:
@@ -6,30 +6,47 @@ on:
       - main
 
 jobs:
-  web-deploy:
-    name: Build and Deploy
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Get latest code
+      - name: 🚚 Get latest code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      # --- PARTE 1: FRONTEND (VUE 3) ---
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: 🔨 Install & Build Front
+        run: |
+          npm install
+          npm run build
 
-      - name: Build Project
-        run: npm run build 
-
-      - name: Sync files to Server
+      - name: 📂 Deploy Front to public_html
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/ 
-          server-dir: ./ 
+          local-dir: ./dist/
+          server-dir: ./ # Raíz del usuario FTP (debe ser public_html)
+
+      # --- PARTE 2: BACKEND (NODE.JS API) ---
+      
+      # Creamos el archivo de reinicio antes de subir
+      - name: 🔄 Prepare Restart Signal
+        run: |
+          mkdir -p ./API/tmp
+          touch ./API/tmp/restart.txt
+
+      - name: 📂 Deploy API and Restart
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./API/
+          # Ajusta esta ruta a la carpeta de tu App Node (fuera de public_html)
+          server-dir: ../API-BsaleManagerAPP/ 
