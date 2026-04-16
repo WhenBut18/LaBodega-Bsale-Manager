@@ -3,9 +3,12 @@ import pkg from 'pg'
 const { Pool } = pkg
 import cors from 'cors'
 import 'dotenv/config'
+import { ref } from 'vue'
+import axios from 'axios'
 
 const app = express()
 const PORT = process.env.PORT || 3000
+const bsaleURL = 'https://api.bsale.io/'
 app.use(cors())
 app.use(express.json())
 
@@ -65,7 +68,9 @@ app.get('/datos', async (req, res) => {
 
 app.get('/datos/documentos', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'document\'')
+    const result = await pool.query(
+      'SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'document\'',
+    )
     res.json(result.rows)
   } catch (err) {
     console.error(err)
@@ -75,7 +80,9 @@ app.get('/datos/documentos', async (req, res) => {
 
 app.get('/datos/stocks', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'stock\'')
+    const result = await pool.query(
+      'SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'stock\'',
+    )
     res.json(result.rows)
   } catch (err) {
     console.error(err)
@@ -85,7 +92,9 @@ app.get('/datos/stocks', async (req, res) => {
 
 app.get('/datos/productos', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'product\'')
+    const result = await pool.query(
+      'SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'product\'',
+    )
     res.json(result.rows)
   } catch (err) {
     console.error(err)
@@ -95,7 +104,9 @@ app.get('/datos/productos', async (req, res) => {
 
 app.get('/datos/variantes', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'variant\'')
+    const result = await pool.query(
+      'SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'variant\'',
+    )
     res.json(result.rows)
   } catch (err) {
     console.error(err)
@@ -105,8 +116,28 @@ app.get('/datos/variantes', async (req, res) => {
 
 app.get('/datos/precios', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'price\'')
+    const result = await pool.query(
+      'SELECT * FROM "public"."logs_webhooks" WHERE "Data"->> \'topic\' = \'price\'',
+    )
     res.json(result.rows)
+  } catch (err) {
+    console.error(err)
+    res.status(500).json({ error: err.message })
+  }
+})
+
+app.get('datos/referencias/:referencia', async (req, res) => {
+  const referencia = req.params.referencia
+  if (!referencia) {
+    res.status(500).json({ error: 'falta referencia' })
+  }
+  try {
+    const response = axios.get(bsaleURL + referencia, {
+      headers: {
+        'access-token': process.env.BSALE_ACCESS_WEBHOOK,
+      },
+    })
+    res.status(500).json({ datos: response })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err.message })
