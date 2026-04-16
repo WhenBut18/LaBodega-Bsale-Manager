@@ -3,7 +3,6 @@ import pkg from 'pg'
 const { Pool } = pkg
 import cors from 'cors'
 import 'dotenv/config'
-import { ref } from 'vue'
 import axios from 'axios'
 
 const app = express()
