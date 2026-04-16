@@ -126,7 +126,7 @@ app.get('/datos/precios', async (req, res) => {
   }
 })
 
-app.get('datos/referencias/:referencia', async (req, res) => {
+app.get('/datos/referencias/:referencia', async (req, res) => {
   const referencia = req.params.referencia
   if (!referencia) {
     res.status(500).json({ error: 'falta referencia' })
