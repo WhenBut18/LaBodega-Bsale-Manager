@@ -4,6 +4,7 @@ const { Pool } = pkg
 import cors from 'cors'
 import 'dotenv/config'
 import axios from 'axios'
+import { ref } from 'vue'
 
 const app = express()
 const PORT = process.env.PORT || 3000
@@ -126,9 +127,9 @@ app.get('/datos/precios', async (req, res) => {
 })
 
 app.get('/datos/referencias', async (req, res) => {
-  const referencia = req.headers['referencia']
+  const referencia = req.headers
   if (!referencia) {
-    res.status(500).json({ error: 'falta referencia' })
+    res.status(500).json({ error: 'falta referencia', tuheardes: referencia })
   }
   try {
     const response = axios.get(bsaleURL + referencia, {
