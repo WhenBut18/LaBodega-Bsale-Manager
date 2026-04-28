@@ -7,7 +7,7 @@ import axios from 'axios'
 
 const app = express()
 const PORT = process.env.PORT || 3000
-const bsaleURL = 'https://api.bsale.io/'
+const bsaleURL = 'https://api.bsale.io'
 app.use(cors())
 app.use(express.json())
 
@@ -136,7 +136,7 @@ app.get('/datos/referencias', async (req, res) => {
         'access-token': process.env.BSALE_ACCESS_WEBHOOK,
       },
     })
-    res.status(500).json({ datos: response })
+    res.json({ datos: response })
   } catch (err) {
     console.error(err)
     res.status(500).json({ error: err.message })
