@@ -128,7 +128,7 @@ app.get('/datos/precios', async (req, res) => {
 app.get('/datos/referencias', async (req, res) => {
   const referencia = req.headers['referencia']
   if (!referencia) {
-    res.status(500).json({ error: 'falta referencia', tuheardes: referencia })
+    res.status(500).json({ error: referencia })
   }
   try {
     const response = axios.get(bsaleURL + referencia, {
