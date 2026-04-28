@@ -4,7 +4,6 @@ const { Pool } = pkg
 import cors from 'cors'
 import 'dotenv/config'
 import axios from 'axios'
-import { ref } from 'vue'
 
 const app = express()
 const PORT = process.env.PORT || 3000
